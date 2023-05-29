@@ -2,31 +2,30 @@ local self = require("openmw.self")
 local types = require("openmw.types")
 local core = require("openmw.core")
 
-local actor_stats = types.Actor.stats
-local getEffect = types.ActorActiveEffects.getEffect()
+local playerStats = types.Actor.stats
 
-local health = actor_stats.dynamic.health(self)
-local strength = actor_stats.attributes.strength(self)
-local endurance = actor_stats.attributes.endurance(self)
-local level = actor_stats.level(self)
+local health = playerStats.dynamic.health(self)
+local strength = playerStats.attributes.strength(self)
+local endurance = playerStats.attributes.endurance(self)
+local level = playerStats.level(self)
 
-local fLevelUpHealthEndMult = require("openmw.core").getGMST("fLevelUpHealthEndMult")
+local fLevelUpHealthEndMult = core.getGMST("fLevelUpHealthEndMult")
 
-local HealthState = health.current
-local StrengthState = strength.modified
-local EnduranceState = endurance.modified
-local LevelState = level.current
+local healthState = health.current
+local strengthState = strength.modified
+local enduranceState = endurance.modified
+local levelState = level.current
 
 local function setHealth()
 	local oldBaseHealthState = health.base
 	local oldCurrentHealthState = health.current
 
-	EnduranceState = endurance.modified
-	StrengthState = strength.modified
-	LevelState = level.current
+	enduranceState = endurance.modified
+	strengthState = strength.modified
+	levelState = level.current
 
-	local baseHealth = ((EnduranceState + StrengthState) / 2)
-		+ ((LevelState - 1) * fLevelUpHealthEndMult * EnduranceState)
+	local baseHealth = ((enduranceState + strengthState) / 2)
+		+ ((levelState - 1) * fLevelUpHealthEndMult * enduranceState)
 
 
 end
@@ -39,10 +38,10 @@ return {
 			end
 
 			if
-				health.current == StrengthState
-				and endurance.modified == EnduranceState
-				and strength.modified == StrengthState
-				and level.current == LevelState
+				health.current == strengthState
+				and endurance.modified == enduranceState
+				and strength.modified == strengthState
+				and level.current == levelState
 			then
 				return
 			end
