@@ -37,7 +37,9 @@ local function setHealth()
 
    local fortifyHealthMag = types.Actor.activeEffects(self):getEffect(core.magic.EFFECT_TYPE.FortifyHealth)
 
-   newBaseHealth = newBaseHealth + fortifyHealthMag
+   if fortifyHealthMag ~= nil then
+      newBaseHealth = newBaseHealth + fortifyHealthMag
+   end
 
    local newCurrentHealth
    if conf:get("maintainDifference") then
