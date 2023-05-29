@@ -2,14 +2,7 @@ local self = require("openmw.self")
 local types = require("openmw.types")
 local core = require("openmw.core")
 local store = require("openmw.storage")
-local conf = store.playerSection('omwStateBasedHealth')
-
-if conf:get("maintainDifference") == nil then
-   conf:set("maintainDifference", false)
-end
-if conf:get("minBaseHealth") == nil then
-   conf:set("minBaseHealth", 0)
-end
+local conf = store.globalSection('omwStateBasedHealth')
 
 local playerStats = types.Actor.stats
 
@@ -25,6 +18,9 @@ local enduranceState = endurance.modified
 local levelState = level.current
 
 local function setHealth()
+
+   print(conf:get("maintainDifference"))
+   print(conf:get("minBaseHealth"))
 	local oldBaseHealthState = health.base
 	local oldCurrentHealthState = health.current
 
@@ -86,4 +82,10 @@ return {
 			setHealth()
 		end,
 	},
+   eventHandlers = {
+      loaded = function ()
+         print("LOADED")
+         setHealth()
+      end
+   }
 }

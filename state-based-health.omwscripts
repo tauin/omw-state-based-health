@@ -1,1 +1,2 @@
+GLOBAL: scripts/tau/state-based-health/global.lua
 PLAYER: scripts/tau/state-based-health/player.lua
