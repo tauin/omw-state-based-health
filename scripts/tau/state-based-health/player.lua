@@ -39,8 +39,9 @@ local function setHealth()
 
    if fortifyHealthMag == nil then
       fortifyHealthMag = 0
+   else
+      newBaseHealth = newBaseHealth + fortifyHealthMag.magnitude
    end
-   newBaseHealth = newBaseHealth + fortifyHealthMag
 
    local newCurrentHealth
    if conf:get("maintainDifference") then
