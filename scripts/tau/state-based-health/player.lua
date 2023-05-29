@@ -38,6 +38,7 @@ local function setHealth()
    local fortifyHealthMag = types.Actor.activeEffects(self):getEffect(core.magic.EFFECT_TYPE.FortifyHealth)
 
    if fortifyHealthMag ~= nil then
+      fortifyHealthMag = 0
       newBaseHealth = newBaseHealth + fortifyHealthMag
    end
 
