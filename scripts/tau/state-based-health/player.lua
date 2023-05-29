@@ -13,16 +13,16 @@ local level = actor_stats.level(self)
 local fLevelUpHealthEndMult = require("openmw.core").getGMST("fLevelUpHealthEndMult")
 
 local HealthState = health.current
-local StrengthState = strength.current
-local EnduranceState = endurance.current
+local StrengthState = strength.modified
+local EnduranceState = endurance.modified
 local LevelState = level.current
 
 local function setHealth()
 	local oldBaseHealthState = health.base
 	local oldCurrentHealthState = health.current
 
-	EnduranceState = endurance.current
-	StrengthState = strength.current
+	EnduranceState = endurance.modified
+	StrengthState = strength.modified
 	LevelState = level.current
 
 	local baseHealth = ((EnduranceState + StrengthState) / 2)
@@ -40,8 +40,8 @@ return {
 
 			if
 				health.current == StrengthState
-				and endurance.current == EnduranceState
-				and strength.current == StrengthState
+				and endurance.modified == EnduranceState
+				and strength.modified == StrengthState
 				and level.current == LevelState
 			then
 				return
