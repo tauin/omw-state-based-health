@@ -40,7 +40,8 @@ local function setHealth()
    if fortifyHealthMag == nil then
       fortifyHealthMag = 0
    else
-      newBaseHealth = newBaseHealth + fortifyHealthMag.magnitude
+      fortifyHealthMag = fortifyHealthMag.magnitude
+      newBaseHealth = newBaseHealth + fortifyHealthMag
    end
 
    local newCurrentHealth
