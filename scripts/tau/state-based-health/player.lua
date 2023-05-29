@@ -1,6 +1,15 @@
 local self = require("openmw.self")
 local types = require("openmw.types")
 local core = require("openmw.core")
+local store = require("openmw.storage")
+local conf = store.playerSection('omwStateBasedHealth')
+
+if conf:get("maintainDifference") == nil then
+   conf:set("maintainDifference", false)
+end
+if conf:get("minBaseHealth") == nil then
+   conf:set("minBaseHealth", 0)
+end
 
 local playerStats = types.Actor.stats
 
@@ -11,7 +20,6 @@ local level = playerStats.level(self)
 
 local fLevelUpHealthEndMult = core.getGMST("fLevelUpHealthEndMult")
 
-local healthState = health.current
 local strengthState = strength.modified
 local enduranceState = endurance.modified
 local levelState = level.current
@@ -24,10 +32,36 @@ local function setHealth()
 	strengthState = strength.modified
 	levelState = level.current
 
-	local baseHealth = ((enduranceState + strengthState) / 2)
+	local newBaseHealth = ((enduranceState + strengthState) / 2)
 		+ ((levelState - 1) * fLevelUpHealthEndMult * enduranceState)
 
+   local fortifyHealthMag = types.Actor.activeEffects(self):getEffect(core.magic.EFFECT_TYPE.FortifyHealth)
 
+   newBaseHealth = newBaseHealth + fortifyHealthMag
+
+   local newCurrentHealth
+   if conf:get("maintainDifference") then
+      local diff = oldBaseHealthState - oldCurrentHealthState
+      newCurrentHealth = newBaseHealth - diff
+   else
+      local ratio = health.current / health.base
+      newCurrentHealth = newBaseHealth * ratio
+   end
+
+   if fortifyHealthMag > 0 and not conf:get("maintainDifference") then
+      local currentHealthWouldBe = oldCurrentHealthState - fortifyHealthMag
+
+      local ratioWouldBe = currentHealthWouldBe / oldBaseHealthState
+
+      local currentHealthWillbe = newBaseHealth * ratioWouldBe
+
+      if currentHealthWouldBe >= 0 then
+         newCurrentHealth = currentHealthWillbe + fortifyHealthMag
+      end
+   end
+
+   health.base = newBaseHealth
+   health.current = newCurrentHealth
 end
 
 return {
@@ -37,9 +71,7 @@ return {
 				return
 			end
 
-			if
-				health.current == strengthState
-				and endurance.modified == enduranceState
+			if endurance.modified == enduranceState
 				and strength.modified == strengthState
 				and level.current == levelState
 			then
