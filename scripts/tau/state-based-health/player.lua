@@ -21,10 +21,10 @@ local F_LEVEL_UP_HEALTH_END_MULT = core.getGMST("fLevelUpHealthEndMult")
 local FORTIFY_HEALTH = core.magic.EFFECT_TYPE.FortifyHealth
 
 local function round(number, digit_position)
-  local precision = math.pow(10, digit_position)
-  number = number + (precision / 2);
+   local precision = digit_position ^ 2
+   number = number + (precision / 2)
 
-  return math.floor(number / precision) * precision
+   return math.floor(number / precision) * precision
 end
 
 local function setHealth()
@@ -34,7 +34,6 @@ local function setHealth()
    enduranceState = endurance.modified
    strengthState = strength.modified
    levelState = level.current
-
 
    local newBaseHealth = ((enduranceState + strengthState) / 2)
       + ((levelState - 1) * F_LEVEL_UP_HEALTH_END_MULT * enduranceState)
@@ -57,7 +56,6 @@ local function setHealth()
    if conf:get("maintainAbsoluteDifference") then
       local HealthDifference = previousBaseHealth - previousCurrentHealth
       newCurrentHealth = newBaseHealth - HealthDifference
-
    else
       -- Morrowind and openMW handle this differently, im not sure what exactly the issue is
       -- but it seems to deal with floating point goofyness and how each engine rounds their numbers
@@ -81,7 +79,6 @@ local function setHealth()
 
    health.base = newBaseHealth
    health.current = newCurrentHealth
-
 end
 
 return {
