@@ -2,7 +2,7 @@ local self = require("openmw.self")
 local types = require("openmw.types")
 local core = require("openmw.core")
 local store = require("openmw.storage")
-local conf = store.globalSection("omwStateBasedHealth")
+local conf = store.playerSection("omwStateBasedHealth")
 
 local actor = types.Actor
 local playerStats = actor.stats
@@ -21,77 +21,78 @@ local F_LEVEL_UP_HEALTH_END_MULT = core.getGMST("fLevelUpHealthEndMult")
 local FORTIFY_HEALTH = core.magic.EFFECT_TYPE.FortifyHealth
 
 local function setHealth()
-  local oldBaseHealth = health.base
-  local oldCurrentHealth = health.current
+   local previousBaseHealth = health.base
+   local previousCurrentHealth = health.current
 
-  enduranceState = endurance.modified
-  strengthState = strength.modified
-  levelState = level.current
+   enduranceState = endurance.modified
+   strengthState = strength.modified
+   levelState = level.current
 
-  local newBaseHealth = ((enduranceState + strengthState) / 2)
-    + ((levelState - 1) * F_LEVEL_UP_HEALTH_END_MULT * enduranceState)
+   local newBaseHealth = ((enduranceState + strengthState) / 2)
+      + ((levelState - 1) * F_LEVEL_UP_HEALTH_END_MULT * enduranceState)
 
-  -- In Base Morrowind, potions increase current health, while spells increase maximum health
-  -- MCP adds the option to have potions also increase maximum health
-  -- OpenMW changes both effects to fortify current health while leaving maximum health alone
-  local fortifyHealthMagnitude = actor.activeEffects(self):getEffect(FORTIFY_HEALTH)
+   -- In Base Morrowind, potions increase current health, while spells increase maximum health
+   -- MCP adds the option to have potions also increase maximum health
+   -- OpenMW changes both effects to fortify current health while leaving maximum health alone
+   local fortifyHealthMag = actor.activeEffects(self):getEffect(FORTIFY_HEALTH)
 
-  if fortifyHealthMagnitude == nil then
-    fortifyHealthMagnitude = 0
-  else
-    fortifyHealthMagnitude = fortifyHealthMagnitude.magnitude
-    newBaseHealth = newBaseHealth + fortifyHealthMagnitude
-  end
+   -- Goofy ahh nil handling
+   if fortifyHealthMag == nil then
+      fortifyHealthMag = 0
+   else
+      fortifyHealthMag = fortifyHealthMag.magnitude
+      newBaseHealth = newBaseHealth + fortifyHealthMag
+   end
 
-  newBaseHealth = math.max(newBaseHealth, conf:get("minBaseHealth"))
+   newBaseHealth = math.max(newBaseHealth, conf:get("minBaseHealth"))
 
-  local newCurrentHealth
-  if conf:get("maintainAbsoluteDifference") then
-    local HealthDifference = oldBaseHealth - oldCurrentHealth
-    newCurrentHealth = newBaseHealth - HealthDifference
-  else
-    local HealthRatio = health.current / health.base
-    newCurrentHealth = newBaseHealth * HealthRatio
-  end
+   local newCurrentHealth
+   if conf:get("maintainAbsoluteDifference") then
+      local HealthDifference = previousBaseHealth - previousCurrentHealth
+      newCurrentHealth = newBaseHealth - HealthDifference
+   else
+      local HealthRatio = health.current / health.base
+      newCurrentHealth = newBaseHealth * HealthRatio
+   end
 
-  if fortifyHealthMagnitude > 0 and not conf:get("maintainAbsoluteDifference") then
-    local currentHealthSansFortify = oldCurrentHealth - fortifyHealthMagnitude
+   if fortifyHealthMag > 0 and not conf:get("maintainAbsoluteDifference") then
+      local previousCurrentHealthSansFortify = previousCurrentHealth - fortifyHealthMag
 
-    local ratioSansFortify = currentHealthSansFortify / oldBaseHealth
+      local ratioSansFortify = previousCurrentHealthSansFortify / previousBaseHealth
 
-    local currentHealthWithFortify = newBaseHealth * ratioSansFortify
+      local currentHealthWithFortify = newBaseHealth * ratioSansFortify
 
-    if currentHealthSansFortify >= 0 then
-      newCurrentHealth = currentHealthWithFortify + fortifyHealthMagnitude
-    end
-  end
+      if previousCurrentHealthSansFortify >= 0 then
+         newCurrentHealth = currentHealthWithFortify + fortifyHealthMag
+      end
+   end
 
-  health.base = newBaseHealth
-  health.current = newCurrentHealth
+   health.base = newBaseHealth
+   health.current = newCurrentHealth
 end
 
 return {
-  engineHandlers = {
-    onFrame = function()
-      if health.current <= 0 then
-        return
-      end
+   engineHandlers = {
+      onFrame = function()
+         if health.current <= 0 then
+            return
+         end
 
-      if
-        endurance.modified == enduranceState
-        and strength.modified == strengthState
-        and level.current == levelState
-      then
-        return
-      end
+         if
+            endurance.modified == enduranceState
+            and strength.modified == strengthState
+            and level.current == levelState
+         then
+            return
+         end
 
-      setHealth()
-    end,
-  },
-  eventHandlers = {
-    loaded = function()
-      print("LOADED")
-      setHealth()
-    end,
-  },
+         setHealth()
+      end,
+   },
+   eventHandlers = {
+      loaded = function()
+         print("LOADED")
+         setHealth()
+      end,
+   },
 }

@@ -1,5 +1,3 @@
-PLAYER: scripts/tau/state-based-health/settings-init.lua
-GLOBAL: scripts/tau/state-based-health/settings-group.lua
-
 GLOBAL: scripts/tau/state-based-health/global.lua
 PLAYER: scripts/tau/state-based-health/player.lua
+PLAYER: scripts/tau/state-based-health/settings.lua
