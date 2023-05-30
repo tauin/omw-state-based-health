@@ -19,8 +19,6 @@ local levelState = level.current
 
 local function setHealth()
 
-   print(conf:get("maintainDifference"))
-   print(conf:get("minBaseHealth"))
 	local oldBaseHealthState = health.base
 	local oldCurrentHealthState = health.current
 
@@ -39,6 +37,8 @@ local function setHealth()
       fortifyHealthMag = fortifyHealthMag.magnitude
       newBaseHealth = newBaseHealth + fortifyHealthMag
    end
+
+   newBaseHealth = math.max(newBaseHealth, conf:get("minBaseHealth"))
 
    local newCurrentHealth
    if conf:get("maintainDifference") then

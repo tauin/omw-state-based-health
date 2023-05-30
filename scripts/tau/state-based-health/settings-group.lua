@@ -5,11 +5,6 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 local I = require("openmw.interfaces")
-I.Settings.registerPage {
-  key = 'StateBasedHealth',
-  l10n = 'state_based_health',
-  name = 'State Based Health',
-}
 I.Settings.registerGroup {
   key = 'omwStateBasedHealth',
   page = 'StateBasedHealth',
@@ -26,7 +21,6 @@ I.Settings.registerGroup {
         key = 'minBaseHealth',
         renderer = 'number',
         name = "Minimum Max Health",
-        arguments = {integer = true,min = 0, max = 20}
       }
   },
 }
