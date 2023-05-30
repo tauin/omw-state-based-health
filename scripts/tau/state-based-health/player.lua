@@ -21,10 +21,8 @@ local F_LEVEL_UP_HEALTH_END_MULT = core.getGMST("fLevelUpHealthEndMult")
 local FORTIFY_HEALTH = core.magic.EFFECT_TYPE.FortifyHealth
 
 local function round(number, digit_position)
-   local precision = digit_position ^ 2
-   number = number + (precision / 2)
-
-   return math.floor(number / precision) * precision
+   local pow = 10 ^ digit_position
+   return math.floor(number * pow + 0.5) / pow
 end
 
 local function setHealth()
@@ -59,8 +57,6 @@ local function setHealth()
    else
       -- Morrowind and openMW handle this differently, im not sure what exactly the issue is
       -- but it seems to deal with floating point goofyness and how each engine rounds their numbers
-      -- so instead we just round it ourselves to the nearest two digits, this isnt a fix so much as
-      -- it is a bandaid to keep the current health closer to what it actually should be
       local HealthRatio = round((health.current / health.base), 2)
       newCurrentHealth = newBaseHealth * HealthRatio
    end
