@@ -26,6 +26,7 @@ I.Settings.registerGroup({
       {
          key = "maintainAbsoluteDifference",
          renderer = "checkbox",
+         default = false,
          name = "Maintain health differences?",
       },
       {
@@ -36,4 +37,4 @@ I.Settings.registerGroup({
       },
    },
 })
-I.Settings.updateRendererArgument("omwStateBasedHealth", "number", {min = 0, max = 20, integer = true})
+I.Settings.updateRendererArgument("omwStateBasedHealth", "minBaseHealth", {min = 0, max = 20, integer = true})
