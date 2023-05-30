@@ -28,9 +28,9 @@ local function setHealth()
 	local newBaseHealth = ((enduranceState + strengthState) / 2)
 		+ ((levelState - 1) * fLevelUpHealthEndMult * enduranceState)
 
-  -- In Base Morrowind, potions increase current health, while spells increase maximum health
-  -- MCP adds the option to have potions also increase maximum health
-  -- OpenMW changes both effects to fortify current health while leaving maximum health alone
+	-- In Base Morrowind, potions increase current health, while spells increase maximum health
+	-- MCP adds the option to have potions also increase maximum health
+	-- OpenMW changes both effects to fortify current health while leaving maximum health alone
 	local fortifyHealthMag = types.Actor.activeEffects(self):getEffect(core.magic.EFFECT_TYPE.FortifyHealth)
 
 	if fortifyHealthMag == nil then
