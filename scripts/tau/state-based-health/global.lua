@@ -1,8 +1,8 @@
 local store = require("openmw.storage")
 local conf = store.globalSection("omwStateBasedHealth")
 
-if conf:get("maintainDifference") == nil then
-	conf:set("maintainDifference", false)
+if conf:get("maintainAbsoluteDifference") == nil then
+	conf:set("maintainAbsoluteDifference", false)
 end
 if conf:get("minBaseHealth") == nil then
 	conf:set("minBaseHealth", 0)

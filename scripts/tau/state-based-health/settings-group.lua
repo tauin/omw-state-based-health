@@ -13,7 +13,7 @@ I.Settings.registerGroup({
 	permanentStorage = true,
 	settings = {
 		{
-			key = "maintainDifference",
+			key = "maintainAbsoluteDifference",
 			renderer = "checkbox",
 			name = "Maintain health differences?",
 		},

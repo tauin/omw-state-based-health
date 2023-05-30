@@ -16,7 +16,7 @@ local strengthState = strength.modified
 local enduranceState = endurance.modified
 local levelState = level.current
 
--- Consts
+-- Constants
 local F_LEVEL_UP_HEALTH_END_MULT = core.getGMST("fLevelUpHealthEndMult")
 local FORTIFY_HEALTH = core.magic.EFFECT_TYPE.FortifyHealth
 
@@ -46,7 +46,7 @@ local function setHealth()
   newBaseHealth = math.max(newBaseHealth, conf:get("minBaseHealth"))
 
   local newCurrentHealth
-  if conf:get("maintainDifference") then
+  if conf:get("maintainAbsoluteDifference") then
     local HealthDifference = oldBaseHealth - oldCurrentHealth
     newCurrentHealth = newBaseHealth - HealthDifference
   else
@@ -54,7 +54,7 @@ local function setHealth()
     newCurrentHealth = newBaseHealth * HealthRatio
   end
 
-  if fortifyHealthMagnitude > 0 and not conf:get("maintainDifference") then
+  if fortifyHealthMagnitude > 0 and not conf:get("maintainAbsoluteDifference") then
     local currentHealthSansFortify = oldCurrentHealth - fortifyHealthMagnitude
 
     local ratioSansFortify = currentHealthSansFortify / oldBaseHealth
