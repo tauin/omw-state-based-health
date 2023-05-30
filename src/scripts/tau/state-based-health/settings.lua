@@ -37,4 +37,8 @@ I.Settings.registerGroup({
       },
    },
 })
-I.Settings.updateRendererArgument("omwStateBasedHealth", "minBaseHealth", {min = 0, max = 20, integer = true})
+I.Settings.updateRendererArgument(
+   "omwStateBasedHealth",
+   "minBaseHealth",
+   { min = 0, max = 20, integer = true }
+)
