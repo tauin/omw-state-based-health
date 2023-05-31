@@ -26,8 +26,8 @@ local function round(number, digit_position)
 end
 
 local function setHealth()
-   local previousBaseHealth = health.base
-   local previousCurrentHealth = health.current
+   local priorBaseHealth = health.base
+   local priorCurrentHealth = health.current
 
    enduranceState = endurance.modified
    strengthState = strength.modified
@@ -36,40 +36,34 @@ local function setHealth()
    local newBaseHealth = ((enduranceState + strengthState) / 2)
       + ((levelState - 1) * F_LEVEL_UP_HEALTH_END_MULT * enduranceState)
 
-   -- In Base Morrowind, potions increase current health, while spells increase maximum health
-   -- MCP adds the option to have potions also increase maximum health
-   -- OpenMW changes both effects to fortify current health while leaving maximum health alone
-   local fortifyHealthMag = actor.activeEffects(self):getEffect(FORTIFY_HEALTH)
+   local fortifyHealthMagnitude = actor.activeEffects(self):getEffect(FORTIFY_HEALTH)
 
    -- Goofy ahh nil handling
-   if fortifyHealthMag == nil then
-      fortifyHealthMag = 0
+   if fortifyHealthMagnitude == nil then
+      fortifyHealthMagnitude = 0
    else
-      fortifyHealthMag = fortifyHealthMag.magnitude
+      fortifyHealthMagnitude = fortifyHealthMagnitude.magnitude
    end
 
    newBaseHealth = math.max(newBaseHealth, conf:get("minBaseHealth"))
 
    local newCurrentHealth
    if conf:get("maintainAbsoluteDifference") then
-      local HealthDifference = previousBaseHealth - previousCurrentHealth
+      local HealthDifference = priorBaseHealth - priorCurrentHealth
       newCurrentHealth = newBaseHealth - HealthDifference
    else
-      -- Morrowind and openMW handle this differently, im not sure what exactly the issue is
-      -- but it seems to deal with floating point goofyness and how each engine rounds their numbers
       local HealthRatio = round((health.current / health.base), 2)
       newCurrentHealth = newBaseHealth * HealthRatio
    end
 
-   if fortifyHealthMag > 0 and not conf:get("maintainAbsoluteDifference") then
-      local previousCurrentHealthSansFortify = previousCurrentHealth - fortifyHealthMag
+   if fortifyHealthMagnitude > 0 and not conf:get("maintainAbsoluteDifference") then
+      local priorCurrentHealthSansFortify = priorCurrentHealth - fortifyHealthMagnitude
 
-      local ratioSansFortify = previousCurrentHealthSansFortify / previousBaseHealth
-
+      local ratioSansFortify = priorCurrentHealthSansFortify / priorBaseHealth
       local currentHealthSansFortify = newBaseHealth * ratioSansFortify
 
-      if previousCurrentHealthSansFortify >= 0 then
-         newCurrentHealth = currentHealthSansFortify + fortifyHealthMag
+      if priorCurrentHealthSansFortify >= 0 then
+         newCurrentHealth = currentHealthSansFortify + fortifyHealthMagnitude
       end
    end
 
@@ -97,7 +91,6 @@ return {
    },
    eventHandlers = {
       loaded = function()
-         print("LOADED")
          setHealth()
       end,
    },
